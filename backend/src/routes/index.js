@@ -4,11 +4,16 @@ const { listProducts, createProduct, updateProduct, deleteProduct } = require('.
 const { listMovements, createMovement } = require('../controllers/movements');
 const { listAlerts, getDashboard } = require('../controllers/alerts');
 const { createUser, listUsers, deleteUser } = require('../controllers/users');
+const { initSystem, getMe } = require('../controllers/init');
 
 const router = Router();
 
 // Health check
 router.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+
+// Initialisation premier démarrage (sans auth Firestore)
+router.post('/init', initSystem);
+router.get('/me', getMe);
 
 // Routes établissements (authentifiées)
 const estPath = '/establishments/:establishmentId';

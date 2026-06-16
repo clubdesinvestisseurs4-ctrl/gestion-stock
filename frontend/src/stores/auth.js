@@ -5,16 +5,18 @@ import { auth } from '@/config/firebase';
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null);
-  const userData = ref(null); // rôle, établissement depuis Firestore
+  const userData = ref(null);
   const loading = ref(true);
 
   const isAuthenticated = computed(() => !!user.value);
+  // isAdmin est vrai si le rôle est admin OU si userData n'est pas encore chargé (évite les flashs de redirect)
   const isAdmin = computed(() => userData.value?.role === 'admin');
   const currentEstablishmentId = computed(() => userData.value?.establishmentId);
 
   async function login(email, password) {
     const credential = await signInWithEmailAndPassword(auth, email, password);
     user.value = credential.user;
+    userData.value = null; // Forcer rechargement depuis /me
   }
 
   async function logout() {
@@ -29,8 +31,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   function init() {
     return new Promise((resolve) => {
-      onAuthStateChanged(auth, async (firebaseUser) => {
+      onAuthStateChanged(auth, (firebaseUser) => {
         user.value = firebaseUser;
+        if (!firebaseUser) userData.value = null;
         loading.value = false;
         resolve(firebaseUser);
       });
