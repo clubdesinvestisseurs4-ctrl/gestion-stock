@@ -81,18 +81,31 @@ service cloud.firestore {
 
 ### Variables d'environnement à ajouter sur Render
 
+> ✅ **Méthode recommandée — évite les erreurs `private_key` sur Render**
+
+La `private_key` Firebase contient des sauts de ligne qui ne survivent pas aux variables d'environnement. Il faut encoder tout le fichier JSON en Base64 :
+
+**Sur Linux / Mac (terminal) :**
+```bash
+base64 -w 0 serviceAccountKey.json
+# Copier la longue chaîne affichée
 ```
-PORT=3001
+
+**Sur Windows (PowerShell) :**
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes("C:\chemin\vers\serviceAccountKey.json"))
+# Copier la longue chaîne affichée
+```
+
+Puis ajouter **une seule variable** sur Render :
+
+```
+FIREBASE_SERVICE_ACCOUNT_BASE64=eyJwcm9qZWN0X2lkIjoiLi4uIn0=   ← votre chaîne Base64
 NODE_ENV=production
-FIREBASE_PROJECT_ID=your-project-id
-FIREBASE_PRIVATE_KEY_ID=your-key-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk-xxx@your-project-id.iam.gserviceaccount.com
-FIREBASE_CLIENT_ID=your-client-id
 FRONTEND_URL=https://your-frontend.vercel.app
 ```
 
-> ⚠️ Pour `FIREBASE_PRIVATE_KEY` : coller la clé complète avec les `\n` littéraux (Render les interprétera correctement).
+C'est tout — pas besoin des autres variables Firebase séparées.
 
 5. Cliquer **Create Web Service** → attendre le déploiement
 6. Copier l'URL du service (ex: `https://gestion-stock-api.onrender.com`)
