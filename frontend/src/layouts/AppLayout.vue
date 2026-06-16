@@ -68,7 +68,13 @@
         </div>
       </header>
       <main class="main-content">
-        <router-view />
+        <div v-if="initError" class="alert-banner danger" style="margin-bottom:1rem">
+          ⚠️ {{ initError }}
+          <button class="btn btn-secondary btn-sm" style="margin-left:auto" @click="() => { initError=''; location.reload(); }">
+            Recharger
+          </button>
+        </div>
+        <router-view v-else />
       </main>
     </div>
   </div>
@@ -81,12 +87,14 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useEstablishmentStore } from '@/stores/establishment';
 import { useStockStore } from '@/stores/stock';
+import api from '@/config/api';
 
 const authStore = useAuthStore();
 const estStore = useEstablishmentStore();
 const stockStore = useStockStore();
 const router = useRouter();
 const sidebarOpen = ref(false);
+const initError = ref('');
 
 const alertCount = computed(() => stockStore.lowStockProducts.length);
 
@@ -103,7 +111,29 @@ async function logout() {
 }
 
 onMounted(async () => {
-  await stockStore.fetchProducts(estStore.currentId);
+  // Charger les données utilisateur si pas encore fait (une seule fois, pas dans le router)
+  if (!authStore.userData) {
+    try {
+      const me = await api.get('/me');
+      authStore.setUserData(me);
+    } catch (e) {
+      const status = e.status || 0;
+      if (status === 403) {
+        // Utilisateur non enregistré dans Firestore → page d'initialisation
+        router.replace('/init');
+        return;
+      }
+      if (status === 404) {
+        // Route /me inexistante = backend pas encore déployé
+        initError.value = 'Backend en cours de déploiement. Rechargez dans 1 minute.';
+      }
+      // Erreur réseau (status 0) → continuer, le dashboard gérera le réveil
+    }
+  }
+
+  if (!initError.value) {
+    await stockStore.fetchProducts(estStore.currentId);
+  }
 });
 
 watch(() => estStore.currentId, (id) => {

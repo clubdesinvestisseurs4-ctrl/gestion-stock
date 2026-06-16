@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-import api from '@/config/api';
 
 const routes = [
   { path: '/login', name: 'Login', component: () => import('@/views/LoginView.vue'), meta: { public: true } },
@@ -26,33 +25,14 @@ const router = createRouter({
   routes,
 });
 
+// Guard minimaliste : JAMAIS d'appels API ici pour éviter les boucles infinies
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   if (authStore.loading) await authStore.init();
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) return '/login';
   if (to.meta.public && authStore.isAuthenticated) return '/';
-  if (to.meta.adminOnly && !authStore.isAdmin) return '/dashboard';
-
-  // Charger les données utilisateur si pas encore fait
-  if (authStore.isAuthenticated && !authStore.userData && to.name !== 'Init') {
-    try {
-      const me = await api.get('/me');
-      authStore.setUserData(me);
-    } catch (e) {
-      const msg = e.message || '';
-      // Erreur réseau (Render endormi) → laisser passer, sera géré dans la vue
-      if (msg.includes('inaccessible') || msg.includes('timeout') || msg.includes('Network')) {
-        return true;
-      }
-      // Utilisateur non enregistré → /init
-      if (msg.includes('non enregistré') || msg.includes('introuvable')) {
-        return '/init';
-      }
-      // Autre 403/401 → login
-      return '/login';
-    }
-  }
+  if (to.meta.adminOnly && authStore.userData && !authStore.isAdmin) return '/dashboard';
 });
 
 export default router;
