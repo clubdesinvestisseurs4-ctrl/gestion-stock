@@ -34,14 +34,23 @@ router.beforeEach(async (to) => {
   if (to.meta.public && authStore.isAuthenticated) return '/';
   if (to.meta.adminOnly && !authStore.isAdmin) return '/dashboard';
 
-  // Après login, vérifier que l'utilisateur existe dans Firestore
+  // Charger les données utilisateur si pas encore fait
   if (authStore.isAuthenticated && !authStore.userData && to.name !== 'Init') {
     try {
       const me = await api.get('/me');
       authStore.setUserData(me);
     } catch (e) {
-      // L'intercepteur api.js gère la redirection vers /init si needsInit=true
-      if (to.name !== 'Init') return '/init';
+      const msg = e.message || '';
+      // Erreur réseau (Render endormi) → laisser passer, sera géré dans la vue
+      if (msg.includes('inaccessible') || msg.includes('timeout') || msg.includes('Network')) {
+        return true;
+      }
+      // Utilisateur non enregistré → /init
+      if (msg.includes('non enregistré') || msg.includes('introuvable')) {
+        return '/init';
+      }
+      // Autre 403/401 → login
+      return '/login';
     }
   }
 });

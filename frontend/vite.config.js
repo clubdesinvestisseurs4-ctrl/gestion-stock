@@ -24,11 +24,19 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // Les appels API ne doivent JAMAIS être interceptés par le Service Worker
+        // (données dynamiques + Render peut mettre 30s à se réveiller)
+        navigateFallback: null,
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/.*\.onrender\.com\/api\//,
-            handler: 'NetworkFirst',
-            options: { cacheName: 'api-cache', networkTimeoutSeconds: 10 },
+            // API Render → NetworkOnly : toujours aller au réseau, jamais de cache
+            urlPattern: ({ url }) => url.hostname.includes('onrender.com'),
+            handler: 'NetworkOnly',
+          },
+          {
+            // Firebase Auth → NetworkOnly
+            urlPattern: ({ url }) => url.hostname.includes('googleapis.com') || url.hostname.includes('firebaseapp.com'),
+            handler: 'NetworkOnly',
           },
         ],
       },

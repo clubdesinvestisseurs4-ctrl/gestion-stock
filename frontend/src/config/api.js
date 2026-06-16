@@ -3,13 +3,12 @@ import { auth } from './firebase';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
-  timeout: 20000,
+  timeout: 45000, // 45s pour laisser Render se réveiller (plan gratuit ~30s)
 });
 
 api.interceptors.request.use(async (config) => {
   const user = auth.currentUser;
   if (user) {
-    // Forcer le refresh du token à chaque requête pour éviter les tokens expirés
     const token = await user.getIdToken(false);
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -21,15 +20,23 @@ api.interceptors.response.use(
   (err) => {
     const status = err.response?.status;
     const data = err.response?.data;
+
+    // Erreur réseau (Render endormi, timeout, pas de connexion)
+    if (!err.response) {
+      return Promise.reject(new Error('Serveur inaccessible. Veuillez patienter et réessayer.'));
+    }
+
     const message = data?.error || 'Erreur de connexion au serveur';
 
-    // Utilisateur non initialisé → rediriger vers /init
-    if (status === 403 && (data?.needsInit !== undefined || message === 'Utilisateur introuvable' || message === 'Utilisateur non enregistré')) {
-      if (data?.needsInit) {
-        window.location.href = '/init';
-      } else {
-        window.location.href = '/login';
-      }
+    // 403 : utilisateur non initialisé → rediriger vers /init
+    if (status === 403 && data?.needsInit === true) {
+      window.location.href = '/init';
+      return Promise.reject(new Error(message));
+    }
+
+    // 403 sans needsInit : utilisateur non autorisé → login
+    if (status === 403) {
+      return Promise.reject(new Error(message));
     }
 
     return Promise.reject(new Error(message));

@@ -2,9 +2,18 @@
   <div>
     <h2 class="page-title">Tableau de bord — {{ estStore.current?.name }}</h2>
 
-    <div v-if="stockStore.loading" class="loading">Chargement...</div>
+    <!-- Bannière réveil serveur -->
+    <ServerWakeup :visible="serverSleeping" @retry="loadData" />
 
-    <template v-else>
+    <!-- Erreur serveur -->
+    <div v-if="serverError && !stockStore.loading" class="alert-banner danger" style="margin-bottom:1rem">
+      ⚠️ {{ serverError }}
+      <button class="btn btn-secondary btn-sm" style="margin-left:auto" @click="loadData">Réessayer</button>
+    </div>
+
+    <div v-if="stockStore.loading" class="loading">Chargement des données...</div>
+
+    <template v-else-if="!serverError">
       <!-- Alertes de stock bas -->
       <div v-if="stockStore.lowStockProducts.length" class="alert-banner warning" style="margin-bottom:1.25rem">
         ⚠️ <strong>{{ stockStore.lowStockProducts.length }} produit(s)</strong> en dessous du seuil minimum.
@@ -94,23 +103,45 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useStockStore } from '@/stores/stock';
 import { useEstablishmentStore } from '@/stores/establishment';
+import ServerWakeup from '@/components/ServerWakeup.vue';
 
 const stockStore = useStockStore();
 const estStore = useEstablishmentStore();
 
-const dashboard = stockStore.dashboard;
+const serverError = ref('');
+const serverSleeping = ref(false);
+
+const dashboard = computed(() => stockStore.dashboard);
 
 function formatDate(iso) {
   if (!iso) return '—';
   return new Date(iso).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
-onMounted(async () => {
-  await stockStore.fetchDashboard(estStore.currentId);
-});
+async function loadData() {
+  serverError.value = '';
+  serverSleeping.value = false;
+  try {
+    await Promise.all([
+      stockStore.fetchDashboard(estStore.currentId),
+      stockStore.fetchProducts(estStore.currentId),
+    ]);
+  } catch (e) {
+    const msg = e.message || '';
+    if (msg.includes('inaccessible') || msg.includes('timeout')) {
+      serverSleeping.value = true;
+      // Réessai automatique après 15s
+      setTimeout(loadData, 15000);
+    } else {
+      serverError.value = msg;
+    }
+  }
+}
+
+onMounted(loadData);
 </script>
 
 <style scoped>
