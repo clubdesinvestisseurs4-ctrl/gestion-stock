@@ -9,30 +9,30 @@
   --color-success: #27ae60;
 
   /* Light theme (défaut) */
-  --bg-body:      #f9fafb;
+  --bg-body:      #f3f4f6;
   --bg-card:      #ffffff;
   --bg-sidebar:   #ffffff;
   --bg-topbar:    #ffffff;
   --bg-input:     #ffffff;
-  --bg-th:        #f9fafb;
+  --bg-th:        #f3f4f6;
   --bg-tr-hover:  #f9fafb;
-  --bg-est-btn:   #f3f4f6;
+  --bg-est-btn:   #e5e7eb;
   --bg-est-active:#ffffff;
-  --border-color: #e5e7eb;
-  --border-light: #f3f4f6;
-  --text-main:    #1f2937;
-  --text-muted:   #4b5563;
-  --text-soft:    #9ca3af;
-  --nav-active-bg:#e6f4ed;
+  --border-color: #d1d5db;
+  --border-light: #e5e7eb;
+  --text-main:    #111827;
+  --text-muted:   #374151;
+  --text-soft:    #6b7280;
+  --nav-active-bg:#dcfce7;
   --modal-overlay:rgba(0,0,0,.45);
 
   /* Alias rétro-compat pour les composants qui utilisent les anciennes variables */
   --color-gray-50:  #f9fafb;
   --color-gray-100: #f3f4f6;
   --color-gray-200: #e5e7eb;
-  --color-gray-400: #9ca3af;
-  --color-gray-600: #4b5563;
-  --color-gray-800: #1f2937;
+  --color-gray-400: #6b7280;
+  --color-gray-600: #374151;
+  --color-gray-800: #111827;
 
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.08);
@@ -51,20 +51,20 @@
   --bg-tr-hover:  #263348;
   --bg-est-btn:   #263348;
   --bg-est-active:#334155;
-  --border-color: #334155;
-  --border-light: #263348;
-  --text-main:    #f1f5f9;
-  --text-muted:   #94a3b8;
-  --text-soft:    #64748b;
-  --nav-active-bg:#14532d33;
+  --border-color: #475569;
+  --border-light: #334155;
+  --text-main:    #f8fafc;
+  --text-muted:   #e2e8f0;
+  --text-soft:    #94a3b8;
+  --nav-active-bg:#14532d55;
   --modal-overlay:rgba(0,0,0,.65);
 
   --color-gray-50:  #0f172a;
   --color-gray-100: #1e293b;
   --color-gray-200: #334155;
-  --color-gray-400: #64748b;
-  --color-gray-600: #94a3b8;
-  --color-gray-800: #f1f5f9;
+  --color-gray-400: #94a3b8;
+  --color-gray-600: #e2e8f0;
+  --color-gray-800: #f8fafc;
 }
 
 body { background: var(--bg-body); color: var(--text-main); min-height: 100vh; transition: background .2s, color .2s; }

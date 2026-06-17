@@ -8,22 +8,23 @@ async function listAlerts(req, res) {
       .collection('establishments').doc(establishmentId)
       .collection('products')
       .where('isLowStock', '==', true)
-      .orderBy('name')
       .get();
 
-    const alerts = snap.docs.map(doc => {
-      const d = doc.data();
-      return {
-        id: doc.id,
-        name: d.name,
-        category: d.category,
-        quantity: d.quantity,
-        minThreshold: d.minThreshold,
-        unit: d.unit,
-        deficit: d.minThreshold - d.quantity,
-        updatedAt: d.updatedAt,
-      };
-    });
+    const alerts = snap.docs
+      .map(doc => {
+        const d = doc.data();
+        return {
+          id: doc.id,
+          name: d.name,
+          category: d.category,
+          quantity: d.quantity,
+          minThreshold: d.minThreshold,
+          unit: d.unit,
+          deficit: +(d.minThreshold - d.quantity).toFixed(3),
+          updatedAt: d.updatedAt,
+        };
+      })
+      .sort((a, b) => a.name.localeCompare(b.name));
 
     res.json({ count: alerts.length, alerts });
   } catch (err) {

@@ -104,17 +104,30 @@
     <div v-if="showMovementModal" class="modal-overlay" @click.self="showMovementModal = false">
       <div class="modal">
         <h3>{{ movementType === 'entree' ? '↑ Entrée de stock' : '↓ Sortie de stock' }}</h3>
-        <p style="margin-bottom:1rem;color:var(--color-gray-600)">
-          Produit : <strong>{{ movementProduct?.name }}</strong> — Stock actuel : <strong>{{ movementProduct?.quantity }} {{ movementProduct?.unit }}</strong>
+        <p style="margin-bottom:.5rem;color:var(--text-muted)">
+          Produit : <strong>{{ movementProduct?.name }}</strong>
         </p>
-        <form @submit.prevent="saveMovement">
+        <div class="stock-disponible" :class="{ 'low': movementProduct?.isLowStock }">
+          Stock disponible : <strong>{{ movementProduct?.quantity }} {{ movementProduct?.unit }}</strong>
+          <span v-if="movementProduct?.isLowStock" class="badge badge-danger" style="margin-left:.5rem">Stock bas</span>
+        </div>
+        <form @submit.prevent="saveMovement" style="margin-top:.75rem">
           <div class="form-group">
             <label>Quantité *</label>
             <input v-model.number="movementQty" type="number" min="0.01" step="0.01" required autofocus />
           </div>
+          <!-- Alerte insuffisance : affichée instantanément, avant soumission -->
+          <div v-if="movementType === 'sortie' && movementQty > 0 && movementQty > (movementProduct?.quantity ?? 0)"
+               class="alert-banner danger" style="margin-bottom:.75rem">
+            ⛔ Quantité insuffisante — disponible : <strong>{{ movementProduct?.quantity }} {{ movementProduct?.unit }}</strong>
+          </div>
+          <div v-else-if="movementType === 'sortie' && movementQty > 0 && movementProduct?.quantity - movementQty <= movementProduct?.minThreshold"
+               class="alert-banner warning" style="margin-bottom:.75rem">
+            ⚠️ Cette sortie passera le stock sous le seuil d'alerte ({{ movementProduct?.minThreshold }} {{ movementProduct?.unit }}).
+          </div>
           <div class="form-group">
             <label>Note (optionnel)</label>
-            <input v-model="movementNote" placeholder="Ex: Livraison du 16/06, usage cuisine..." />
+            <input v-model="movementNote" placeholder="Ex: Livraison du 17/06, usage cuisine..." />
           </div>
           <div v-if="movementError" class="alert-banner danger" style="margin-bottom:.75rem">{{ movementError }}</div>
           <div v-if="movementResult" class="alert-banner" :class="movementResult.alert ? 'warning' : 'success'" style="margin-bottom:.75rem">
@@ -122,7 +135,13 @@
           </div>
           <div style="display:flex;gap:.5rem;justify-content:flex-end">
             <button type="button" class="btn btn-secondary" @click="showMovementModal = false">Fermer</button>
-            <button v-if="!movementResult" type="submit" class="btn" :class="movementType === 'entree' ? 'btn-primary' : 'btn-danger'" :disabled="saving">
+            <button
+              v-if="!movementResult"
+              type="submit"
+              class="btn"
+              :class="movementType === 'entree' ? 'btn-primary' : 'btn-danger'"
+              :disabled="saving || (movementType === 'sortie' && movementQty > (movementProduct?.quantity ?? 0))"
+            >
               {{ saving ? '...' : (movementType === 'entree' ? '↑ Ajouter' : '↓ Retrancher') }}
             </button>
           </div>
@@ -283,4 +302,13 @@ onMounted(async () => {
 .action-btns { display: flex; gap: .3rem; }
 .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
 .alert-banner.success { background: #d1fae5; border-left: 4px solid var(--color-success); }
+.stock-disponible {
+  font-size: .875rem;
+  padding: .4rem .75rem;
+  background: var(--color-gray-100);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  display: flex; align-items: center; flex-wrap: wrap; gap: .3rem;
+}
+.stock-disponible.low { background: #fee2e2; color: #991b1b; }
 </style>
