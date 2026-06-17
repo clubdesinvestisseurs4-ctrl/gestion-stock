@@ -55,7 +55,7 @@
       </div>
 
       <div class="table-wrap" v-if="bilanRows.length">
-        <table>
+        <table class="card-table">
           <thead>
             <tr>
               <th>Produit</th>
@@ -69,13 +69,13 @@
           <tbody>
             <tr v-for="row in bilanRows" :key="row.productId">
               <td><strong>{{ row.productName }}</strong></td>
-              <td>{{ row.unit }}</td>
-              <td class="num text-success">{{ row.qtyIn > 0 ? '+' + row.qtyIn : '—' }}</td>
-              <td class="num text-danger">{{ row.qtyOut > 0 ? '-' + row.qtyOut : '—' }}</td>
-              <td class="num" :class="row.net >= 0 ? 'text-success' : 'text-danger'">
+              <td data-label="Unité">{{ row.unit }}</td>
+              <td data-label="↑ Entrée" class="num text-success">{{ row.qtyIn > 0 ? '+' + row.qtyIn : '—' }}</td>
+              <td data-label="↓ Sortie" class="num text-danger">{{ row.qtyOut > 0 ? '-' + row.qtyOut : '—' }}</td>
+              <td data-label="Solde net" class="num" :class="row.net >= 0 ? 'text-success' : 'text-danger'">
                 {{ row.net >= 0 ? '+' : '' }}{{ row.net }}
               </td>
-              <td class="num" :class="row.stockFinal !== null && row.stockFinal <= 0 ? 'text-danger' : ''">
+              <td data-label="Stock final" class="num" :class="row.stockFinal !== null && row.stockFinal <= 0 ? 'text-danger' : ''">
                 {{ row.stockFinal !== null ? row.stockFinal : '—' }}
               </td>
             </tr>
@@ -96,7 +96,7 @@
         <p>Aucun mouvement pour cette période.</p>
       </div>
       <div v-else class="table-wrap">
-        <table>
+        <table class="card-table">
           <thead>
             <tr>
               <th>Date / Heure</th>
@@ -112,19 +112,19 @@
           <tbody>
             <tr v-for="m in filtered" :key="m.id">
               <td style="white-space:nowrap;font-size:.8rem">{{ formatDate(m.createdAt) }}</td>
-              <td><strong>{{ m.productName }}</strong></td>
-              <td>
+              <td data-label="Produit"><strong>{{ m.productName }}</strong></td>
+              <td data-label="Type">
                 <span class="badge" :class="m.type === 'entree' ? 'badge-success' : 'badge-warning'">
                   {{ m.type === 'entree' ? '↑ Entrée' : '↓ Sortie' }}
                 </span>
               </td>
-              <td style="font-weight:600">{{ m.quantity }} {{ m.unit }}</td>
-              <td style="color:var(--text-soft)">{{ m.quantityBefore }}</td>
-              <td :style="m.triggeredAlert ? 'color:var(--color-danger);font-weight:600' : ''">
+              <td data-label="Quantité" style="font-weight:600">{{ m.quantity }} {{ m.unit }}</td>
+              <td data-label="Avant" style="color:var(--text-soft)">{{ m.quantityBefore }}</td>
+              <td data-label="Après" :style="m.triggeredAlert ? 'color:var(--color-danger);font-weight:600' : ''">
                 {{ m.quantityAfter }} {{ m.triggeredAlert ? '⚠️' : '' }}
               </td>
-              <td style="font-size:.8rem;color:var(--text-soft)">{{ m.createdByName || '—' }}</td>
-              <td style="font-size:.8rem;color:var(--text-soft);max-width:140px;overflow:hidden;text-overflow:ellipsis">
+              <td data-label="Par" style="font-size:.8rem;color:var(--text-soft)">{{ m.createdByName || '—' }}</td>
+              <td data-label="Note" style="font-size:.8rem;color:var(--text-soft);max-width:140px;overflow:hidden;text-overflow:ellipsis">
                 {{ m.note || '—' }}
               </td>
             </tr>

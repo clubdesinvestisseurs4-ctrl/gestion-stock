@@ -13,27 +13,27 @@
         <p>Aucun utilisateur.</p>
       </div>
       <div v-else class="table-wrap">
-        <table>
+        <table class="card-table">
           <thead>
             <tr><th>Email</th><th>Nom</th><th>Rôle</th><th>Établissement</th><th>Créé le</th><th>Actions</th></tr>
           </thead>
           <tbody>
             <tr v-for="u in users" :key="u.uid">
-              <td>{{ u.email }}</td>
-              <td>{{ u.displayName || '—' }}</td>
-              <td>
+              <td><strong>{{ u.email }}</strong></td>
+              <td data-label="Nom">{{ u.displayName || '—' }}</td>
+              <td data-label="Rôle">
                 <span class="badge" :class="u.role === 'admin' ? 'badge-info' : 'badge-success'">
                   {{ u.role === 'admin' ? 'Admin' : 'Opérateur' }}
                 </span>
               </td>
-              <td>{{ getEstablishmentName(u.establishmentId) }}</td>
-              <td style="font-size:.8rem;color:var(--color-gray-400)">{{ formatDate(u.createdAt) }}</td>
-              <td>
+              <td data-label="Établissement">{{ getEstablishmentName(u.establishmentId) }}</td>
+              <td data-label="Créé le" style="font-size:.8rem;color:var(--color-gray-400)">{{ formatDate(u.createdAt) }}</td>
+              <td data-label="Actions">
                 <button
                   v-if="u.uid !== authStore.user?.uid"
                   class="btn btn-danger btn-sm"
                   @click="confirmDelete(u)"
-                >🗑</button>
+                >🗑 Supprimer</button>
               </td>
             </tr>
           </tbody>
@@ -111,7 +111,7 @@ const formError = ref('');
 
 const form = ref({ email: '', displayName: '', password: '', role: 'operator', establishmentId: 'cookafrica' });
 
-const ESTABLISHMENTS = { cookafrica: '🍽️ CookAfrica', ohinene: '🏨 Hôtel Ohinéné' };
+const ESTABLISHMENTS = { cookafrica: 'CookAfrica', ohinene: 'Hôtel Ohinéné' };
 function getEstablishmentName(id) { return id ? (ESTABLISHMENTS[id] || id) : 'Tous'; }
 
 function formatDate(iso) {

@@ -182,3 +182,71 @@ tr:hover td { background: var(--bg-tr-hover); }
   .card { padding: 1rem; }
   .modal { max-width: 100%; margin: .5rem; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+   Tableaux → Cards sur mobile
+   Usage : ajouter class="card-table" sur <table>
+           et data-label="Colonne" sur chaque <td>
+   ═══════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+  .card-table { border-collapse: separate; }
+
+  .card-table thead { display: none; }
+
+  .card-table tbody tr {
+    display: block;
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    margin-bottom: .65rem;
+    padding: .65rem .75rem;
+    box-shadow: var(--shadow);
+  }
+
+  .card-table tbody td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .3rem 0;
+    border: none;
+    font-size: .875rem;
+    min-height: 1.8rem;
+    gap: .5rem;
+  }
+
+  /* Label généré depuis data-label */
+  .card-table tbody td[data-label]::before {
+    content: attr(data-label);
+    font-weight: 600;
+    font-size: .72rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    flex-shrink: 0;
+    min-width: 90px;
+  }
+
+  /* Aligner le contenu à droite */
+  .card-table tbody td { text-align: right; }
+  .card-table tbody td[data-label] { text-align: right; }
+
+  /* Première cellule = titre de la card, pleine largeur */
+  .card-table tbody td:first-child {
+    font-size: 1rem;
+    font-weight: 700;
+    padding-bottom: .5rem;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: .25rem;
+    text-align: left;
+    justify-content: flex-start;
+  }
+  .card-table tbody td:first-child::before { display: none; }
+
+  /* Masquer les cellules vides ou actions secondaires */
+  .card-table tbody td:empty { display: none; }
+
+  /* Boutons d'action : rester groupés */
+  .card-table tbody td .action-btns {
+    justify-content: flex-end;
+  }
+}

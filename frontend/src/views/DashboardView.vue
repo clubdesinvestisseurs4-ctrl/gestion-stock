@@ -49,17 +49,17 @@
       <div v-if="stockStore.lowStockProducts.length" class="card" style="margin-top:1.25rem">
         <h3 style="margin-bottom:.75rem;font-size:.95rem">Produits à réapprovisionner</h3>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead>
               <tr><th>Produit</th><th>Catégorie</th><th>Stock actuel</th><th>Seuil min</th><th>Déficit</th></tr>
             </thead>
             <tbody>
               <tr v-for="p in stockStore.lowStockProducts" :key="p.id">
                 <td><strong>{{ p.name }}</strong></td>
-                <td>{{ p.category }}</td>
-                <td><span class="badge badge-danger">{{ p.quantity }} {{ p.unit }}</span></td>
-                <td>{{ p.minThreshold }} {{ p.unit }}</td>
-                <td style="color:var(--color-danger);font-weight:600">-{{ p.minThreshold - p.quantity }} {{ p.unit }}</td>
+                <td data-label="Catégorie">{{ p.category }}</td>
+                <td data-label="Stock actuel"><span class="badge badge-danger">{{ p.quantity }} {{ p.unit }}</span></td>
+                <td data-label="Seuil min">{{ p.minThreshold }} {{ p.unit }}</td>
+                <td data-label="Déficit" style="color:var(--color-danger);font-weight:600">-{{ p.minThreshold - p.quantity }} {{ p.unit }}</td>
               </tr>
             </tbody>
           </table>
@@ -70,21 +70,21 @@
       <div v-if="dashboard?.recentMovements?.length" class="card" style="margin-top:1.25rem">
         <h3 style="margin-bottom:.75rem;font-size:.95rem">Derniers mouvements</h3>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead>
               <tr><th>Produit</th><th>Type</th><th>Qté</th><th>Par</th><th>Date</th></tr>
             </thead>
             <tbody>
               <tr v-for="m in dashboard.recentMovements" :key="m.id">
-                <td>{{ m.productName }}</td>
-                <td>
+                <td><strong>{{ m.productName }}</strong></td>
+                <td data-label="Type">
                   <span class="badge" :class="m.type === 'entree' ? 'badge-success' : 'badge-warning'">
                     {{ m.type === 'entree' ? '↑ Entrée' : '↓ Sortie' }}
                   </span>
                 </td>
-                <td>{{ m.quantity }} {{ m.unit }}</td>
-                <td style="font-size:.8rem;color:var(--color-gray-400)">{{ m.createdByName || '—' }}</td>
-                <td style="font-size:.8rem;color:var(--color-gray-400)">{{ formatDate(m.createdAt) }}</td>
+                <td data-label="Quantité">{{ m.quantity }} {{ m.unit }}</td>
+                <td data-label="Par" style="font-size:.8rem;color:var(--color-gray-400)">{{ m.createdByName || '—' }}</td>
+                <td data-label="Date" style="font-size:.8rem;color:var(--color-gray-400)">{{ formatDate(m.createdAt) }}</td>
               </tr>
             </tbody>
           </table>

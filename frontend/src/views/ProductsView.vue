@@ -27,7 +27,7 @@
         <p>{{ search ? 'Aucun produit trouvé.' : 'Aucun produit enregistré.' }}</p>
       </div>
       <div v-else class="table-wrap">
-        <table>
+        <table class="card-table">
           <thead>
             <tr>
               <th>Produit</th><th>Catégorie</th><th>Stock</th><th>Seuil min</th><th>Unité</th><th>Statut</th><th>Actions</th>
@@ -36,19 +36,19 @@
           <tbody>
             <tr v-for="p in filteredProducts" :key="p.id">
               <td><strong>{{ p.name }}</strong></td>
-              <td>{{ p.category }}</td>
-              <td :style="p.isLowStock ? 'color:var(--color-danger);font-weight:600' : ''">{{ p.quantity }}</td>
-              <td>{{ p.minThreshold }}</td>
-              <td>{{ p.unit }}</td>
-              <td>
+              <td data-label="Catégorie">{{ p.category }}</td>
+              <td data-label="Stock" :style="p.isLowStock ? 'color:var(--color-danger);font-weight:600' : ''">{{ p.quantity }} {{ p.unit }}</td>
+              <td data-label="Seuil min">{{ p.minThreshold }} {{ p.unit }}</td>
+              <td data-label="Unité" class="hide-mobile">{{ p.unit }}</td>
+              <td data-label="Statut">
                 <span class="badge" :class="p.isLowStock ? 'badge-danger' : 'badge-success'">
                   {{ p.isLowStock ? '⚠️ Stock bas' : '✓ OK' }}
                 </span>
               </td>
-              <td>
+              <td data-label="Actions">
                 <div class="action-btns">
-                  <button class="btn btn-secondary btn-sm" @click="openMovement(p, 'entree')">↑</button>
-                  <button class="btn btn-secondary btn-sm" @click="openMovement(p, 'sortie')">↓</button>
+                  <button class="btn btn-secondary btn-sm" @click="openMovement(p, 'entree')">↑ Entrée</button>
+                  <button class="btn btn-secondary btn-sm" @click="openMovement(p, 'sortie')">↓ Sortie</button>
                   <button class="btn btn-secondary btn-sm" @click="openEdit(p)">✏️</button>
                   <button v-if="authStore.isAdmin" class="btn btn-danger btn-sm" @click="confirmDelete(p)">🗑</button>
                 </div>

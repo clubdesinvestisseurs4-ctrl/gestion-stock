@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="28" fill="#1a6b3c"/>
+  <!-- corps boîte -->
+  <rect x="44" y="86" width="104" height="68" fill="#fff"/>
+  <!-- couvercle -->
+  <rect x="44" y="56" width="104" height="30" fill="#fff"/>
+  <!-- ligne séparation -->
+  <rect x="44" y="83" width="104" height="4" fill="#ddd"/>
+  <!-- ruban vertical -->
+  <rect x="87" y="56" width="18" height="98" fill="#1a6b3c"/>
+  <!-- ruban horizontal -->
+  <rect x="44" y="110" width="104" height="16" fill="#1a6b3c"/>
+  <!-- nœud gauche -->
+  <rect x="62" y="46" width="25" height="16" rx="3" fill="#fff"/>
+  <!-- nœud droit -->
+  <rect x="105" y="46" width="25" height="16" rx="3" fill="#fff"/>
+</svg>
