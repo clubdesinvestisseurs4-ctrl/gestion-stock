@@ -68,8 +68,8 @@
           <div v-if="form.role === 'operator'" class="form-group">
             <label>Établissement *</label>
             <select v-model="form.establishmentId" required>
-              <option value="cookafrica">🍽️ CookAfrica</option>
-              <option value="ohinene">🏨 Hôtel Ohinéné</option>
+              <option value="cookafrica">CookAfrica</option>
+              <option value="ohinene">Hôtel Ohinéné</option>
             </select>
           </div>
           <div v-if="formError" class="alert-banner danger" style="margin-bottom:.75rem">{{ formError }}</div>
