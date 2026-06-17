@@ -66,6 +66,9 @@
         <div v-if="stockStore.lowStockProducts.length" class="topbar-alert" @click="$router.push('/alerts')">
           ⚠️ {{ stockStore.lowStockProducts.length }} alerte(s)
         </div>
+        <button class="theme-toggle" @click="themeStore.toggle()" :title="themeStore.dark ? 'Passer en mode clair' : 'Passer en mode sombre'">
+          {{ themeStore.dark ? '☀️' : '🌙' }}
+        </button>
       </header>
       <main class="main-content">
         <div v-if="initError" class="alert-banner danger" style="margin-bottom:1rem">
@@ -87,11 +90,13 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { useEstablishmentStore } from '@/stores/establishment';
 import { useStockStore } from '@/stores/stock';
+import { useThemeStore } from '@/stores/theme';
 import api from '@/config/api';
 
 const authStore = useAuthStore();
 const estStore = useEstablishmentStore();
 const stockStore = useStockStore();
+const themeStore = useThemeStore();
 const router = useRouter();
 const sidebarOpen = ref(false);
 const initError = ref('');
@@ -146,8 +151,8 @@ watch(() => estStore.currentId, (id) => {
 
 .sidebar {
   width: 240px;
-  background: #fff;
-  border-right: 1px solid var(--color-gray-200);
+  background: var(--bg-sidebar);
+  border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -159,32 +164,32 @@ watch(() => estStore.currentId, (id) => {
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  border-bottom: 1px solid var(--color-gray-100);
+  border-bottom: 1px solid var(--border-light);
 }
 .logo { font-size: 1.1rem; font-weight: 700; color: var(--color-primary); }
 .close-btn { display: none; background: none; border: none; cursor: pointer; font-size: 1.1rem; }
 
-.establishment-switcher { padding: .75rem; display: flex; flex-direction: column; gap: .4rem; border-bottom: 1px solid var(--color-gray-100); }
+.establishment-switcher { padding: .75rem; display: flex; flex-direction: column; gap: .4rem; border-bottom: 1px solid var(--border-light); }
 .est-btn {
   display: flex; align-items: center; gap: .5rem;
   padding: .45rem .6rem; border: 2px solid transparent;
-  border-radius: var(--radius); background: var(--color-gray-50);
-  cursor: pointer; font-size: .85rem; transition: all .15s;
+  border-radius: var(--radius); background: var(--bg-est-btn);
+  cursor: pointer; font-size: .85rem; transition: all .15s; color: var(--text-main);
 }
-.est-btn.active { background: #fff; font-weight: 600; }
-.est-btn:hover { background: var(--color-gray-100); }
+.est-btn.active { background: var(--bg-est-active); font-weight: 600; }
+.est-btn:hover { background: var(--color-gray-200); }
 .est-name { font-size: .85rem; }
 
 .nav { padding: .75rem; display: flex; flex-direction: column; gap: .2rem; flex: 1; }
 .nav a {
   display: flex; align-items: center; gap: .6rem;
   padding: .6rem .75rem; border-radius: var(--radius);
-  text-decoration: none; color: var(--color-gray-600);
+  text-decoration: none; color: var(--text-muted);
   font-size: .9rem; transition: background .15s;
   position: relative;
 }
-.nav a:hover { background: var(--color-gray-100); }
-.nav a.router-link-active { background: #e6f4ed; color: var(--color-primary); font-weight: 600; }
+.nav a:hover { background: var(--color-gray-200); }
+.nav a.router-link-active { background: var(--nav-active-bg); color: var(--color-primary); font-weight: 600; }
 .nav-badge {
   margin-left: auto;
   background: var(--color-danger);
@@ -197,21 +202,21 @@ watch(() => estStore.currentId, (id) => {
 
 .sidebar-footer {
   padding: .75rem;
-  border-top: 1px solid var(--color-gray-100);
+  border-top: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   gap: .5rem;
 }
 .user-info { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
-.user-email { font-size: .78rem; color: var(--color-gray-600); word-break: break-all; }
+.user-email { font-size: .78rem; color: var(--text-muted); word-break: break-all; }
 .logout-btn { width: 100%; justify-content: center; }
 
 .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 .topbar {
   display: flex; align-items: center; gap: 1rem;
   padding: .75rem 1.25rem;
-  background: #fff;
-  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--border-color);
   position: sticky; top: 0; z-index: 10;
 }
 .menu-btn { display: none; background: none; border: none; cursor: pointer; font-size: 1.3rem; }
@@ -227,6 +232,13 @@ watch(() => estStore.currentId, (id) => {
   cursor: pointer;
 }
 .main-content { padding: 1.25rem; flex: 1; }
+.theme-toggle {
+  margin-left: auto;
+  background: none; border: none; cursor: pointer;
+  font-size: 1.2rem; padding: .2rem .4rem; border-radius: var(--radius);
+  transition: background .15s;
+}
+.theme-toggle:hover { background: var(--color-gray-200); }
 
 .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 40; }
 

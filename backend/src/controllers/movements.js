@@ -5,16 +5,22 @@ const { v4: uuidv4 } = require('uuid');
 async function listMovements(req, res) {
   try {
     const { establishmentId } = req.params;
-    const { productId, type, limit = 50 } = req.query;
+    const { productId, type, limit = 50, startDate, endDate } = req.query;
 
     let query = getDb()
       .collection('establishments').doc(establishmentId)
       .collection('movements')
-      .orderBy('createdAt', 'desc')
-      .limit(Number(limit));
+      .orderBy('createdAt', 'desc');
 
-    if (productId) query = query.where('productId', '==', productId);
-    if (type) query = query.where('type', '==', type);
+    // Filtre plage de dates (ISO string comparables lexicographiquement)
+    if (startDate) query = query.where('createdAt', '>=', startDate);
+    if (endDate)   query = query.where('createdAt', '<=', endDate);
+
+    // Filtre productId uniquement si pas de filtre date (évite index composé manquant)
+    if (productId && !startDate && !endDate) query = query.where('productId', '==', productId);
+    if (type && !startDate && !endDate)      query = query.where('type', '==', type);
+
+    query = query.limit(startDate || endDate ? 500 : Number(limit));
 
     const snap = await query.get();
     res.json(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
