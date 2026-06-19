@@ -103,12 +103,18 @@ import {
   Title, Tooltip, Legend,
   BarElement, LineElement, PointElement, ArcElement,
   CategoryScale, LinearScale,
+  BarController, LineController, DoughnutController,
 } from 'chart.js';
 import { useStockStore } from '@/stores/stock';
 import { useEstablishmentStore } from '@/stores/establishment';
 import { useThemeStore } from '@/stores/theme';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, LineElement, PointElement, ArcElement, CategoryScale, LinearScale);
+ChartJS.register(
+  Title, Tooltip, Legend,
+  BarElement, LineElement, PointElement, ArcElement,
+  CategoryScale, LinearScale,
+  BarController, LineController, DoughnutController
+);
 
 const stockStore = useStockStore();
 const estStore = useEstablishmentStore();
