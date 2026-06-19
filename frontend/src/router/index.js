@@ -14,6 +14,7 @@ const routes = [
       { path: 'products', name: 'Products', component: () => import('@/views/ProductsView.vue') },
       { path: 'movements', name: 'Movements', component: () => import('@/views/MovementsView.vue') },
       { path: 'alerts', name: 'Alerts', component: () => import('@/views/AlertsView.vue') },
+      { path: 'forecast', name: 'Forecast', component: () => import('@/views/ForecastView.vue') },
       { path: 'users', name: 'Users', component: () => import('@/views/UsersView.vue'), meta: { adminOnly: true } },
     ],
   },

@@ -36,6 +36,9 @@
           <span>⚠️</span> Alertes
           <span v-if="alertCount > 0" class="nav-badge">{{ alertCount }}</span>
         </router-link>
+        <router-link to="/forecast" @click="sidebarOpen = false">
+          <span>📈</span> Prévisions
+        </router-link>
         <router-link v-if="authStore.isAdmin" to="/users" @click="sidebarOpen = false">
           <span>👥</span> Utilisateurs
         </router-link>
@@ -157,6 +160,11 @@ watch(() => estStore.currentId, (id) => {
   flex-direction: column;
   flex-shrink: 0;
   z-index: 50;
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .sidebar-header {
@@ -211,7 +219,7 @@ watch(() => estStore.currentId, (id) => {
 .user-email { font-size: .78rem; color: var(--text-muted); word-break: break-all; }
 .logout-btn { width: 100%; justify-content: center; }
 
-.main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; margin-left: 240px; }
 .topbar {
   display: flex; align-items: center; gap: 1rem;
   padding: .75rem 1.25rem;
@@ -244,10 +252,10 @@ watch(() => estStore.currentId, (id) => {
 
 @media (max-width: 768px) {
   .sidebar {
-    position: fixed; top: 0; left: 0; height: 100vh;
     transform: translateX(-100%); transition: transform .25s;
   }
   .sidebar.open { transform: translateX(0); }
+  .main-wrapper { margin-left: 0; }
   .close-btn { display: block; }
   .menu-btn { display: block; }
   .overlay { display: block; }

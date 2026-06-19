@@ -3,6 +3,7 @@ const { authenticate, requireAdmin, requireEstablishment } = require('../middlew
 const { listProducts, createProduct, updateProduct, deleteProduct } = require('../controllers/products');
 const { listMovements, createMovement } = require('../controllers/movements');
 const { listAlerts, getDashboard } = require('../controllers/alerts');
+const { getForecast } = require('../controllers/forecast');
 const { createUser, listUsers, deleteUser } = require('../controllers/users');
 const { initSystem, getMe } = require('../controllers/init');
 
@@ -20,6 +21,7 @@ const estPath = '/establishments/:establishmentId';
 
 router.get(`${estPath}/dashboard`, authenticate, requireEstablishment, getDashboard);
 router.get(`${estPath}/alerts`, authenticate, requireEstablishment, listAlerts);
+router.get(`${estPath}/forecast`, authenticate, requireEstablishment, getForecast);
 
 router.get(`${estPath}/products`, authenticate, requireEstablishment, listProducts);
 router.post(`${estPath}/products`, authenticate, requireEstablishment, createProduct);

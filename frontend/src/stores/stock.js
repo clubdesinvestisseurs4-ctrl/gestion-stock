@@ -7,6 +7,7 @@ export const useStockStore = defineStore('stock', () => {
   const movements = ref([]);
   const alerts = ref([]);
   const dashboard = ref(null);
+  const forecast = ref(null);
   const loading = ref(false);
   const error = ref(null);
 
@@ -88,17 +89,24 @@ export const useStockStore = defineStore('stock', () => {
     }
   }
 
+  async function fetchForecast(establishmentId, params = {}) {
+    const query = new URLSearchParams(params).toString();
+    forecast.value = await api.get(`/establishments/${establishmentId}/forecast?${query}`);
+    return forecast.value;
+  }
+
   function reset() {
     products.value = [];
     movements.value = [];
     alerts.value = [];
     dashboard.value = null;
+    forecast.value = null;
   }
 
   return {
-    products, movements, alerts, dashboard, loading, error,
+    products, movements, alerts, dashboard, forecast, loading, error,
     lowStockProducts,
     fetchProducts, createProduct, updateProduct, deleteProduct,
-    createMovement, fetchMovements, fetchAlerts, fetchDashboard, reset,
+    createMovement, fetchMovements, fetchAlerts, fetchDashboard, fetchForecast, reset,
   };
 });
