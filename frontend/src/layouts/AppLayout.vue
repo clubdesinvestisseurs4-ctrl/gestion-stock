@@ -17,7 +17,8 @@
           :style="estStore.currentId === est.id ? { borderColor: est.color } : {}"
           @click="switchEstablishment(est.id)"
         >
-          <span>{{ est.icon }}</span>
+          <img v-if="est.logo" :src="est.logo" :alt="est.name" class="est-logo" />
+          <span v-else>{{ est.icon }}</span>
           <span class="est-name">{{ est.name }}</span>
         </button>
       </div>
@@ -63,7 +64,8 @@
       <header class="topbar">
         <button class="menu-btn" @click="sidebarOpen = true">☰</button>
         <div class="topbar-title">
-          <span>{{ estStore.current?.icon }}</span>
+          <img v-if="estStore.current?.logo" :src="estStore.current.logo" :alt="estStore.current.name" class="topbar-logo" />
+          <span v-else>{{ estStore.current?.icon }}</span>
           {{ estStore.current?.name }}
         </div>
         <div v-if="stockStore.lowStockProducts.length" class="topbar-alert" @click="$router.push('/alerts')">
@@ -187,6 +189,7 @@ watch(() => estStore.currentId, (id) => {
 .est-btn.active { background: var(--bg-est-active); font-weight: 600; }
 .est-btn:hover { background: var(--color-gray-200); }
 .est-name { font-size: .85rem; }
+.est-logo { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
 
 .nav { padding: .75rem; display: flex; flex-direction: column; gap: .2rem; flex: 1; }
 .nav a {
@@ -229,6 +232,7 @@ watch(() => estStore.currentId, (id) => {
 }
 .menu-btn { display: none; background: none; border: none; cursor: pointer; font-size: 1.3rem; }
 .topbar-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: .4rem; }
+.topbar-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
 .topbar-alert {
   margin-left: auto;
   background: #fef3c7;
