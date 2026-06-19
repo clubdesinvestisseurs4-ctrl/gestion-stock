@@ -168,7 +168,10 @@ const paretoChartOptions = computed(() => ({
   layout: { padding: { top: 28 } },
   plugins: { legend: { labels: { color: chartTextColor() } } },
   scales: {
-    x: { ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
+    x: {
+      ticks: { color: chartTextColor(), font: { size: 10 }, maxRotation: 60, minRotation: 0, autoSkip: true },
+      grid: { color: chartGridColor() },
+    },
     y: { position: 'left', ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
     y1: {
       position: 'right', min: 0, max: 100,
@@ -274,9 +277,18 @@ onMounted(refresh);
 .trend-down { color: var(--color-success); font-weight: 600; }
 
 .charts-row { display: flex; gap: 1.25rem; flex-wrap: wrap; margin-top: 1.25rem; }
-.chart-card { flex: 1 1 280px; }
+.chart-card { flex: 1 1 280px; min-width: 0; }
 .chart-card-wide { flex: 2 1 420px; }
 .chart-title { margin-bottom: .75rem; font-size: .95rem; }
-.chart-wrap { position: relative; height: 280px; }
+.chart-wrap { position: relative; width: 100%; height: 280px; }
 .donut-wrap { height: 240px; }
+
+@media (max-width: 640px) {
+  .params-card { gap: .85rem; }
+  .params-card .form-group { min-width: 0; flex: 1 1 100%; }
+  .charts-row { gap: 1rem; }
+  .chart-card, .chart-card-wide { flex: 1 1 100%; }
+  .chart-wrap { height: 220px; }
+  .donut-wrap { height: 200px; }
+}
 </style>
