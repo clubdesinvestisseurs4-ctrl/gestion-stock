@@ -27,7 +27,12 @@
         <div class="card chart-card chart-card-wide">
           <h3 class="chart-title">🔥 Ce qui sort le plus — Pareto ({{ forecast.windowDays }} j)</h3>
           <div class="chart-wrap">
-            <Bar :data="paretoChartData" :options="paretoChartOptions" :key="`pareto-${themeStore.dark}`" />
+            <Bar
+              :data="paretoChartData"
+              :options="paretoChartOptions"
+              :plugins="[paretoAnnotationsPlugin]"
+              :key="`pareto-${themeStore.dark}`"
+            />
           </div>
         </div>
         <div class="card chart-card">
@@ -160,6 +165,7 @@ const paretoChartData = computed(() => {
 const paretoChartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
+  layout: { padding: { top: 28 } },
   plugins: { legend: { labels: { color: chartTextColor() } } },
   scales: {
     x: { ticks: { color: chartTextColor() }, grid: { color: chartGridColor() } },
@@ -171,6 +177,47 @@ const paretoChartOptions = computed(() => ({
     },
   },
 }));
+
+// Dessine le seuil 80% (frontière classe A) et le % cumulé au-dessus de chaque point
+const paretoAnnotationsPlugin = {
+  id: 'paretoAnnotations',
+  afterDatasetsDraw(chart) {
+    const { ctx, chartArea, scales, data } = chart;
+    const { x, y1 } = scales;
+    if (!x || !y1) return;
+
+    const thresholdColor = themeStore.dark ? '#fbbf24' : '#b45309';
+    ctx.save();
+
+    const thresholdY = y1.getPixelForValue(80);
+    ctx.strokeStyle = thresholdColor;
+    ctx.setLineDash([6, 4]);
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(chartArea.left, thresholdY);
+    ctx.lineTo(chartArea.right, thresholdY);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle = thresholdColor;
+    ctx.font = '600 11px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText('Seuil 80 % — classe A', chartArea.left + 4, thresholdY - 6);
+
+    const lineDataset = data.datasets.find((d) => d.type === 'line');
+    if (lineDataset) {
+      ctx.fillStyle = '#1a6b3c';
+      ctx.textAlign = 'center';
+      lineDataset.data.forEach((val, idx) => {
+        if (val == null) return;
+        const px = x.getPixelForValue(idx);
+        const py = y1.getPixelForValue(val);
+        ctx.fillText(`${val}%`, px, py - 10);
+      });
+    }
+
+    ctx.restore();
+  },
+};
 
 const urgencyChartData = computed(() => {
   const counts = { critical: 0, warning: 0, ok: 0, inactive: 0 };
