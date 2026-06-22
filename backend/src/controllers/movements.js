@@ -1,5 +1,6 @@
 const { getDb } = require('../config/firebase');
 const { v4: uuidv4 } = require('uuid');
+const { notifyLowStock } = require('./notifications');
 
 // GET /api/establishments/:establishmentId/movements
 async function listMovements(req, res) {
@@ -92,6 +93,13 @@ async function createMovement(req, res) {
     });
 
     await batch.commit();
+
+    // Notification push uniquement sur le front montant (évite de spammer à chaque
+    // sortie suivante une fois déjà en stock bas). Fire-and-forget : ne doit jamais
+    // retarder ni faire échouer la réponse de création de mouvement.
+    if (isLowStock && !product.isLowStock) {
+      notifyLowStock({ establishmentId, product: { id: productId, ...product }, newQuantity });
+    }
 
     res.status(201).json({
       movement: { id: movementRef.id, productId, type, quantity: Number(quantity) },

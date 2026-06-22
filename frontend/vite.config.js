@@ -26,6 +26,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        // Service worker FCM dédié (scope séparé) : ne doit pas être précaché par Workbox
+        globIgnores: ['firebase-messaging-sw.js'],
         // Les appels API ne doivent JAMAIS être interceptés par le Service Worker
         // (données dynamiques + Render peut mettre 30s à se réveiller)
         navigateFallback: null,

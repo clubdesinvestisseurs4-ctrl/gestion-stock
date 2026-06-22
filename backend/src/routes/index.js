@@ -6,6 +6,7 @@ const { listAlerts, getDashboard } = require('../controllers/alerts');
 const { getForecast } = require('../controllers/forecast');
 const { createUser, listUsers, deleteUser } = require('../controllers/users');
 const { initSystem, getMe } = require('../controllers/init');
+const { saveFcmToken, deleteFcmToken } = require('../controllers/notifications');
 
 const router = Router();
 
@@ -15,6 +16,8 @@ router.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date
 // Initialisation premier démarrage (sans auth Firestore)
 router.post('/init', initSystem);
 router.get('/me', getMe);
+router.post('/me/fcm-token', authenticate, saveFcmToken);
+router.delete('/me/fcm-token', authenticate, deleteFcmToken);
 
 // Routes établissements (authentifiées)
 const estPath = '/establishments/:establishmentId';

@@ -25,7 +25,7 @@
     <template v-else>
       <div v-if="forecast?.topMovers?.length" class="charts-row">
         <div class="card chart-card chart-card-wide">
-          <h3 class="chart-title">🔥 Ce qui sort le plus — Pareto ({{ forecast.windowDays }} j)</h3>
+          <h3 class="chart-title">Ce qui sort le plus — Pareto ({{ forecast.windowDays }} j)</h3>
           <div class="chart-wrap">
             <Bar
               :data="paretoChartData"

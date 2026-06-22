@@ -56,7 +56,14 @@ async function deleteUser(req, res) {
       return res.status(400).json({ error: 'Impossible de supprimer votre propre compte' });
     }
     await getAuth().deleteUser(uid);
-    await getDb().collection('users').doc(uid).delete();
+
+    const userRef = getDb().collection('users').doc(uid);
+    const tokensSnap = await userRef.collection('fcmTokens').get();
+    const batch = getDb().batch();
+    tokensSnap.docs.forEach(doc => batch.delete(doc.ref));
+    batch.delete(userRef);
+    await batch.commit();
+
     res.json({ message: 'Utilisateur supprimé' });
   } catch (err) {
     res.status(500).json({ error: err.message });

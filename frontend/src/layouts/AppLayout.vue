@@ -68,12 +68,17 @@
           <span v-else>{{ estStore.current?.icon }}</span>
           {{ estStore.current?.name }}
         </div>
-        <div v-if="stockStore.lowStockProducts.length" class="topbar-alert" @click="$router.push('/alerts')">
-          ⚠️ {{ stockStore.lowStockProducts.length }} alerte(s)
+        <div class="topbar-actions">
+          <div v-if="stockStore.lowStockProducts.length" class="topbar-alert" @click="$router.push('/alerts')">
+            ⚠️ {{ stockStore.lowStockProducts.length }} alerte(s)
+          </div>
+          <button v-if="showPushBell" class="theme-toggle" title="Activer les notifications push" @click="enablePush">
+            🔔
+          </button>
+          <button class="theme-toggle" @click="themeStore.toggle()" :title="themeStore.dark ? 'Passer en mode clair' : 'Passer en mode sombre'">
+            {{ themeStore.dark ? '☀️' : '🌙' }}
+          </button>
         </div>
-        <button class="theme-toggle" @click="themeStore.toggle()" :title="themeStore.dark ? 'Passer en mode clair' : 'Passer en mode sombre'">
-          {{ themeStore.dark ? '☀️' : '🌙' }}
-        </button>
       </header>
       <main class="main-content">
         <div v-if="initError" class="alert-banner danger" style="margin-bottom:1rem">
@@ -82,7 +87,13 @@
             Recharger
           </button>
         </div>
-        <router-view v-else />
+        <template v-else>
+          <div v-if="foregroundNotification" class="alert-banner warning" style="margin-bottom:1rem">
+            🔔 {{ foregroundNotification.notification?.title }} — {{ foregroundNotification.notification?.body }}
+            <button class="btn btn-secondary btn-sm" style="margin-left:auto" @click="foregroundNotification = null">✕</button>
+          </div>
+          <router-view />
+        </template>
       </main>
     </div>
   </div>
@@ -97,6 +108,7 @@ import { useEstablishmentStore } from '@/stores/establishment';
 import { useStockStore } from '@/stores/stock';
 import { useThemeStore } from '@/stores/theme';
 import api from '@/config/api';
+import { usePushNotifications, foregroundNotification } from '@/composables/usePushNotifications';
 
 const authStore = useAuthStore();
 const estStore = useEstablishmentStore();
@@ -106,7 +118,18 @@ const router = useRouter();
 const sidebarOpen = ref(false);
 const initError = ref('');
 
+const { permission: pushPermission, requestAndRegister, silentlyRefreshIfGranted } = usePushNotifications();
+const showPushBell = computed(() => pushPermission.value === 'default');
+
 const alertCount = computed(() => stockStore.lowStockProducts.length);
+
+async function enablePush() {
+  try {
+    await requestAndRegister();
+  } catch (e) {
+    console.error('Notifications push indisponibles:', e.message);
+  }
+}
 
 async function switchEstablishment(id) {
   estStore.switchTo(id);
@@ -143,6 +166,7 @@ onMounted(async () => {
 
   if (!initError.value) {
     await stockStore.fetchProducts(estStore.currentId);
+    silentlyRefreshIfGranted().catch((e) => console.error('Rafraîchissement token push échoué:', e.message));
   }
 });
 
@@ -233,8 +257,8 @@ watch(() => estStore.currentId, (id) => {
 .menu-btn { display: none; background: none; border: none; cursor: pointer; font-size: 1.3rem; }
 .topbar-title { font-weight: 600; font-size: 1rem; display: flex; align-items: center; gap: .4rem; }
 .topbar-logo { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
+.topbar-actions { margin-left: auto; display: flex; align-items: center; gap: .5rem; }
 .topbar-alert {
-  margin-left: auto;
   background: #fef3c7;
   color: #92400e;
   padding: .25rem .7rem;
@@ -245,7 +269,6 @@ watch(() => estStore.currentId, (id) => {
 }
 .main-content { padding: 1.25rem; flex: 1; }
 .theme-toggle {
-  margin-left: auto;
   background: none; border: none; cursor: pointer;
   font-size: 1.2rem; padding: .2rem .4rem; border-radius: var(--radius);
   transition: background .15s;
