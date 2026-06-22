@@ -5,16 +5,6 @@ async function createUser(req, res) {
   try {
     const { email, password, displayName, role, establishmentId } = req.body;
 
-    if (!email || !password || !role) {
-      return res.status(400).json({ error: 'Champs requis: email, password, role' });
-    }
-    if (!['admin', 'operator'].includes(role)) {
-      return res.status(400).json({ error: 'role doit être "admin" ou "operator"' });
-    }
-    if (role === 'operator' && !establishmentId) {
-      return res.status(400).json({ error: 'establishmentId requis pour un opérateur' });
-    }
-
     const userRecord = await getAuth().createUser({ email, password, displayName });
 
     await getDb().collection('users').doc(userRecord.uid).set({

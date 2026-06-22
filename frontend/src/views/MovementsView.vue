@@ -66,7 +66,7 @@
               <th class="num">Stock final</th>
             </tr>
           </thead>
-          <tbody>
+          <TransitionGroup tag="tbody" name="list">
             <tr v-for="row in bilanRows" :key="row.productId">
               <td><strong>{{ row.productName }}</strong></td>
               <td data-label="Unité">{{ row.unit }}</td>
@@ -79,7 +79,7 @@
                 {{ row.stockFinal !== null ? row.stockFinal : '—' }}
               </td>
             </tr>
-          </tbody>
+          </TransitionGroup>
         </table>
       </div>
     </div>
@@ -109,7 +109,7 @@
               <th>Note</th>
             </tr>
           </thead>
-          <tbody>
+          <TransitionGroup tag="tbody" name="list">
             <tr v-for="m in filtered" :key="m.id">
               <td style="white-space:nowrap;font-size:.8rem">{{ formatDate(m.createdAt) }}</td>
               <td data-label="Produit"><strong>{{ m.productName }}</strong></td>
@@ -128,7 +128,7 @@
                 {{ m.note || '—' }}
               </td>
             </tr>
-          </tbody>
+          </TransitionGroup>
         </table>
       </div>
     </div>

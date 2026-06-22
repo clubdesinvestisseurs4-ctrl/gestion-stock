@@ -92,7 +92,11 @@
             🔔 {{ foregroundNotification.notification?.title }} — {{ foregroundNotification.notification?.body }}
             <button class="btn btn-secondary btn-sm" style="margin-left:auto" @click="foregroundNotification = null">✕</button>
           </div>
-          <router-view />
+          <router-view v-slot="{ Component }">
+            <transition name="page" mode="out-in">
+              <component :is="Component" />
+            </transition>
+          </router-view>
         </template>
       </main>
     </div>

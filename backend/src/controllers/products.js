@@ -1,8 +1,6 @@
 const { getDb } = require('../config/firebase');
 const { v4: uuidv4 } = require('uuid');
 
-const UNITS = ['kg', 'g', 'L', 'cl', 'ml', 'pièce', 'carton', 'lot', 'bouteille', 'sachet'];
-
 // GET /api/establishments/:establishmentId/products
 async function listProducts(req, res) {
   try {
@@ -26,24 +24,17 @@ async function createProduct(req, res) {
     const { establishmentId } = req.params;
     const { name, category, unit, quantity, minThreshold } = req.body;
 
-    if (!name || !unit || quantity == null || minThreshold == null) {
-      return res.status(400).json({ error: 'Champs requis: name, unit, quantity, minThreshold' });
-    }
-    if (!UNITS.includes(unit)) {
-      return res.status(400).json({ error: `Unité invalide. Valeurs: ${UNITS.join(', ')}` });
-    }
-
     const ref = getDb()
       .collection('establishments').doc(establishmentId)
       .collection('products').doc(uuidv4());
 
     const product = {
-      name: name.trim(),
-      category: category?.trim() || 'Général',
+      name,
+      category: category || 'Général',
       unit,
-      quantity: Number(quantity),
-      minThreshold: Number(minThreshold),
-      isLowStock: Number(quantity) <= Number(minThreshold),
+      quantity,
+      minThreshold,
+      isLowStock: quantity <= minThreshold,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       createdBy: req.user.uid,
@@ -70,15 +61,12 @@ async function updateProduct(req, res) {
     if (!doc.exists) return res.status(404).json({ error: 'Produit introuvable' });
 
     const updates = { updatedAt: new Date().toISOString() };
-    if (name) updates.name = name.trim();
-    if (category) updates.category = category.trim();
-    if (unit) {
-      if (!UNITS.includes(unit)) return res.status(400).json({ error: 'Unité invalide' });
-      updates.unit = unit;
-    }
+    if (name) updates.name = name;
+    if (category) updates.category = category;
+    if (unit) updates.unit = unit;
     if (minThreshold != null) {
-      updates.minThreshold = Number(minThreshold);
-      updates.isLowStock = doc.data().quantity <= Number(minThreshold);
+      updates.minThreshold = minThreshold;
+      updates.isLowStock = doc.data().quantity <= minThreshold;
     }
 
     await ref.update(updates);

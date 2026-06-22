@@ -5,7 +5,6 @@ const { getDb } = require('../config/firebase');
 async function saveFcmToken(req, res) {
   try {
     const { token } = req.body;
-    if (!token) return res.status(400).json({ error: 'Champ requis: token' });
 
     await getDb()
       .collection('users').doc(req.user.uid)
@@ -22,7 +21,6 @@ async function saveFcmToken(req, res) {
 async function deleteFcmToken(req, res) {
   try {
     const { token } = req.body;
-    if (!token) return res.status(400).json({ error: 'Champ requis: token' });
 
     await getDb()
       .collection('users').doc(req.user.uid)

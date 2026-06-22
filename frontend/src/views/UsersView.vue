@@ -17,7 +17,7 @@
           <thead>
             <tr><th>Email</th><th>Nom</th><th>Rôle</th><th>Établissement</th><th>Créé le</th><th>Actions</th></tr>
           </thead>
-          <tbody>
+          <TransitionGroup tag="tbody" name="list">
             <tr v-for="u in users" :key="u.uid">
               <td><strong>{{ u.email }}</strong></td>
               <td data-label="Nom">{{ u.displayName || '—' }}</td>
@@ -36,7 +36,7 @@
                 >🗑 Supprimer</button>
               </td>
             </tr>
-          </tbody>
+          </TransitionGroup>
         </table>
       </div>
     </div>

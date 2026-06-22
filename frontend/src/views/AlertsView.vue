@@ -20,7 +20,7 @@
           ⚠️ <strong>{{ alerts.length }} produit(s)</strong> nécessitent un réapprovisionnement immédiat.
         </div>
 
-        <div class="alert-cards">
+        <TransitionGroup tag="div" name="list" class="alert-cards">
           <div v-for="a in alerts" :key="a.id" class="card alert-card">
             <div class="alert-card-header">
               <div>
@@ -50,7 +50,7 @@
               ↑ Réapprovisionner
             </router-link>
           </div>
-        </div>
+        </TransitionGroup>
       </template>
     </template>
   </div>

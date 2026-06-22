@@ -33,7 +33,7 @@
               <th>Produit</th><th>Catégorie</th><th>Stock</th><th>Seuil min</th><th>Unité</th><th>Statut</th><th>Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <TransitionGroup tag="tbody" name="list">
             <tr v-for="p in filteredProducts" :key="p.id">
               <td><strong>{{ p.name }}</strong></td>
               <td data-label="Catégorie">{{ p.category }}</td>
@@ -54,7 +54,7 @@
                 </div>
               </td>
             </tr>
-          </tbody>
+          </TransitionGroup>
         </table>
       </div>
     </div>

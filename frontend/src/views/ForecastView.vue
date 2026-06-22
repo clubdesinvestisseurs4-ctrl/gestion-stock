@@ -65,7 +65,7 @@
                 <th>ABC</th>
               </tr>
             </thead>
-            <tbody>
+            <TransitionGroup tag="tbody" name="list">
               <tr v-for="i in forecast.items" :key="i.productId">
                 <td>
                   <strong>{{ i.productName }}</strong>
@@ -92,7 +92,7 @@
                   <span v-else>—</span>
                 </td>
               </tr>
-            </tbody>
+            </TransitionGroup>
           </table>
         </div>
       </div>

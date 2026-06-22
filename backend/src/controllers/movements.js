@@ -36,16 +36,6 @@ async function createMovement(req, res) {
     const { establishmentId } = req.params;
     const { productId, type, quantity, note } = req.body;
 
-    if (!productId || !type || !quantity) {
-      return res.status(400).json({ error: 'Champs requis: productId, type, quantity' });
-    }
-    if (!['entree', 'sortie'].includes(type)) {
-      return res.status(400).json({ error: 'type doit être "entree" ou "sortie"' });
-    }
-    if (Number(quantity) <= 0) {
-      return res.status(400).json({ error: 'La quantité doit être positive' });
-    }
-
     const db = getDb();
     const productRef = db
       .collection('establishments').doc(establishmentId)
@@ -55,7 +45,7 @@ async function createMovement(req, res) {
     if (!productDoc.exists) return res.status(404).json({ error: 'Produit introuvable' });
 
     const product = productDoc.data();
-    const delta = type === 'entree' ? Number(quantity) : -Number(quantity);
+    const delta = type === 'entree' ? quantity : -quantity;
     const newQuantity = product.quantity + delta;
 
     if (newQuantity < 0) {
@@ -81,11 +71,11 @@ async function createMovement(req, res) {
       productId,
       productName: product.name,
       type,
-      quantity: Number(quantity),
+      quantity,
       quantityBefore: product.quantity,
       quantityAfter: newQuantity,
       unit: product.unit,
-      note: note?.trim() || '',
+      note: note || '',
       triggeredAlert: isLowStock,
       createdAt: new Date().toISOString(),
       createdBy: req.user.uid,
@@ -102,7 +92,7 @@ async function createMovement(req, res) {
     }
 
     res.status(201).json({
-      movement: { id: movementRef.id, productId, type, quantity: Number(quantity) },
+      movement: { id: movementRef.id, productId, type, quantity },
       stock: { productId, newQuantity, isLowStock, unit: product.unit },
       alert: isLowStock
         ? { message: `⚠️ Stock bas : ${product.name} (${newQuantity} ${product.unit})` }

@@ -53,7 +53,7 @@
             <thead>
               <tr><th>Produit</th><th>Catégorie</th><th>Stock actuel</th><th>Seuil min</th><th>Déficit</th></tr>
             </thead>
-            <tbody>
+            <TransitionGroup tag="tbody" name="list">
               <tr v-for="p in stockStore.lowStockProducts" :key="p.id">
                 <td><strong>{{ p.name }}</strong></td>
                 <td data-label="Catégorie">{{ p.category }}</td>
@@ -61,7 +61,7 @@
                 <td data-label="Seuil min">{{ p.minThreshold }} {{ p.unit }}</td>
                 <td data-label="Déficit" style="color:var(--color-danger);font-weight:600">-{{ p.minThreshold - p.quantity }} {{ p.unit }}</td>
               </tr>
-            </tbody>
+            </TransitionGroup>
           </table>
         </div>
       </div>
@@ -74,7 +74,7 @@
             <thead>
               <tr><th>Produit</th><th>Type</th><th>Qté</th><th>Par</th><th>Date</th></tr>
             </thead>
-            <tbody>
+            <TransitionGroup tag="tbody" name="list">
               <tr v-for="m in dashboard.recentMovements" :key="m.id">
                 <td><strong>{{ m.productName }}</strong></td>
                 <td data-label="Type">
@@ -86,7 +86,7 @@
                 <td data-label="Par" style="font-size:.8rem;color:var(--color-gray-400)">{{ m.createdByName || '—' }}</td>
                 <td data-label="Date" style="font-size:.8rem;color:var(--color-gray-400)">{{ formatDate(m.createdAt) }}</td>
               </tr>
-            </tbody>
+            </TransitionGroup>
           </table>
         </div>
       </div>

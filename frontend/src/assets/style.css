@@ -169,6 +169,15 @@ tr:hover td { background: var(--bg-tr-hover); }
   to   { transform: translateY(0); opacity: 1; }
 }
 
+/* Transition de changement de page (App.vue + AppLayout.vue) */
+.page-enter-active, .page-leave-active { transition: opacity .15s ease, transform .15s ease; }
+.page-enter-from, .page-leave-to { opacity: 0; transform: translateY(4px); }
+
+/* Transition d'entrée/sortie des lignes de liste (tables produits, mouvements, etc.) */
+.list-enter-active, .list-leave-active { transition: opacity .15s ease, transform .15s ease; }
+.list-enter-from, .list-leave-to { opacity: 0; transform: translateX(-8px); }
+.list-move { transition: transform .2s ease; }
+
 .empty-state {
   display: flex; flex-direction: column; align-items: center;
   gap: .75rem; padding: 3rem 1rem; color: var(--color-gray-400); text-align: center;
