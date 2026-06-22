@@ -10,6 +10,31 @@ const PUSH_SW_SCOPE = '/firebase-cloud-messaging-push-scope';
 export const foregroundNotification = ref(null);
 
 let foregroundListenerAttached = false;
+let audioCtx;
+
+// Bip généré (pas de fichier audio) : la bannière in-app n'a, par nature, aucun
+// son OS associé contrairement à une vraie notification système.
+function playChime() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioCtx.currentTime;
+    [880, 660].forEach((freq, i) => {
+      const start = now + i * 0.15;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, start);
+      gain.gain.exponentialRampToValueAtTime(0.3, start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.14);
+      osc.connect(gain).connect(audioCtx.destination);
+      osc.start(start);
+      osc.stop(start + 0.15);
+    });
+  } catch {
+    // Contexte audio indisponible (politique navigateur) — on ignore, la bannière reste visible.
+  }
+}
 
 // register() résout dès que l'enregistrement existe, pas quand le worker est
 // "active" — PushManager.subscribe() (appelé par getToken) exige un worker actif,
@@ -57,7 +82,10 @@ export function usePushNotifications() {
 
     if (!foregroundListenerAttached) {
       foregroundListenerAttached = true;
-      onMessage(messaging, (payload) => { foregroundNotification.value = payload; });
+      onMessage(messaging, (payload) => {
+        foregroundNotification.value = payload;
+        playChime();
+      });
     }
 
     return true;
