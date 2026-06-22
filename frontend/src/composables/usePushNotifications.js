@@ -11,11 +11,26 @@ export const foregroundNotification = ref(null);
 
 let foregroundListenerAttached = false;
 
+// register() résout dès que l'enregistrement existe, pas quand le worker est
+// "active" — PushManager.subscribe() (appelé par getToken) exige un worker actif,
+// sinon il échoue avec "no active Service Worker".
+function waitUntilActive(registration) {
+  if (registration.active) return Promise.resolve(registration);
+  const worker = registration.installing || registration.waiting;
+  if (!worker) return Promise.resolve(registration);
+  return new Promise((resolve) => {
+    worker.addEventListener('statechange', () => {
+      if (worker.state === 'activated') resolve(registration);
+    });
+  });
+}
+
 async function registerPushServiceWorker() {
   const params = new URLSearchParams(firebaseConfig);
-  return navigator.serviceWorker.register(`/firebase-messaging-sw.js?${params.toString()}`, {
+  const registration = await navigator.serviceWorker.register(`/firebase-messaging-sw.js?${params.toString()}`, {
     scope: PUSH_SW_SCOPE,
   });
+  return waitUntilActive(registration);
 }
 
 export function usePushNotifications() {

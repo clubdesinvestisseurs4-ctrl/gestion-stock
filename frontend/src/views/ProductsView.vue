@@ -311,4 +311,5 @@ onMounted(async () => {
   display: flex; align-items: center; flex-wrap: wrap; gap: .3rem;
 }
 .stock-disponible.low { background: #fee2e2; color: #991b1b; }
+[data-theme="dark"] .stock-disponible.low { background: #450a0a30; color: #fca5a5; }
 </style>
